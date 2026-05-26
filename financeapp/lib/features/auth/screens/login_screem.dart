@@ -1,4 +1,4 @@
-import 'package:financeapp/common/const/colors.dart';
+import 'package:financeapp/core/constants/colors.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreem extends StatelessWidget {

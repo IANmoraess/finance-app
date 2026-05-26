@@ -1,4 +1,4 @@
-import 'package:financeapp/features/login/login_screem.dart';
+import 'package:financeapp/features/auth/screens/login_screem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
