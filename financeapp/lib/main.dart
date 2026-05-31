@@ -15,3 +15,4 @@ void main() async {
   Injector.init();
   runApp(const FinanceApp());
 }
+

@@ -101,34 +101,25 @@ class _ReportsScreenState extends State<ReportsScreen> {
     // mas sempre tem espaço para arrastar
     final chartWidth = months.length * _kGroupW + 24;
 
-    return Container(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Entradas vs Gastos', style: AppTextStyles.h3),
+        const SizedBox(height: 12),
+        Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Cabeçalho
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('Entradas vs Gastos', style: AppTextStyles.h3),
-              Row(children: [
-                _dot(AppColors.income),  const SizedBox(width: 4),
-                const Text('Entradas', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-                const SizedBox(width: 10),
-                _dot(AppColors.expense), const SizedBox(width: 4),
-                const Text('Gastos',   style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-              ]),
-            ],
-          ),
-          const SizedBox(height: 4),
-          // Dica visual de scroll
-          const Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Icon(Icons.swipe_rounded, size: 13, color: AppColors.textHint),
-              SizedBox(width: 3),
-              Text('arraste', style: TextStyle(fontSize: 10, color: AppColors.textHint)),
+              _dot(AppColors.income),  const SizedBox(width: 4),
+              const Text('Entradas', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+              const SizedBox(width: 10),
+              _dot(AppColors.expense), const SizedBox(width: 4),
+              const Text('Gastos',   style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
             ],
           ),
           const SizedBox(height: 12),
@@ -199,6 +190,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
           ),
         ],
       ),
+        ),
+      ],
     );
   }
 
@@ -244,15 +237,15 @@ class _ReportsScreenState extends State<ReportsScreen> {
         _LegendRow(color: AppColors.textSecondary, label: 'Outros', pct: other / total * 100),
     ];
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Gastos por Categoria', style: AppTextStyles.h3),
-          const SizedBox(height: 16),
-          Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Gastos por Categoria', style: AppTextStyles.h3),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16)),
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Gráfico com tamanho fixo compatível com os raios definidos
@@ -281,8 +274,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
               ),
             ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

@@ -11,7 +11,8 @@ import '../widgets/flow_chart.dart';
 import '../widgets/recent_list.dart';
 
 class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+  final VoidCallback? onNavigateToHistory;
+  const DashboardScreen({this.onNavigateToHistory, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +50,7 @@ class DashboardScreen extends StatelessWidget {
                         const SizedBox(height: 12),
                         FlowChart(transactions: weekTxs),
                         const SizedBox(height: 20),
-                        SectionHeader(title: 'Recentes', actionLabel: 'Ver tudo →', onAction: () {}),
+                        SectionHeader(title: 'Recentes', actionLabel: 'Ver tudo →', onAction: onNavigateToHistory),
                         const SizedBox(height: 12),
                         RecentList(transactions: recent),
                         const SizedBox(height: 90),

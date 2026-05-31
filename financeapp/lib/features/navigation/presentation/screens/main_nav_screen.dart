@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:financeapp/core/constants/app_constants.dart';
 import 'package:financeapp/core/theme/app_colors.dart';
 import 'package:financeapp/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:financeapp/features/transactions/presentation/screens/history_screen.dart';
@@ -16,13 +17,18 @@ class MainNavScreen extends StatefulWidget {
 
 class _MainNavScreenState extends State<MainNavScreen> {
   int _index = 0;
+  late final List<Widget> _screens;
 
-  static const _screens = [
-    DashboardScreen(),
-    HistoryScreen(),
-    ReportsScreen(),
-    MoreScreen(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      DashboardScreen(onNavigateToHistory: () => setState(() => _index = 1)),
+      const HistoryScreen(),
+      const ReportsScreen(),
+      const MoreScreen(),
+    ];
+  }
 
   void _openAdd() {
     Navigator.of(context).push(MaterialPageRoute(
@@ -35,7 +41,12 @@ class _MainNavScreenState extends State<MainNavScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: IndexedStack(index: _index, children: _screens),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: AppLimits.contentMaxWidth),
+          child: IndexedStack(index: _index, children: _screens),
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _openAdd,
         backgroundColor: AppColors.primary,

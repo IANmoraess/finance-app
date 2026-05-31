@@ -15,6 +15,7 @@ abstract final class AppStrings {
 }
 
 abstract final class AppLimits {
-  static const maxAmountCents = 999999999; // R$ 9.999.999,99
-  static const recentLimit    = 5;
+  static const maxAmountCents  = 999999999; // R$ 9.999.999,99
+  static const recentLimit     = 5;
+  static const contentMaxWidth = 600.0;    // largura máxima em telas grandes
 }

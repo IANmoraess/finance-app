@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:financeapp/core/theme/app_colors.dart';
 import 'package:financeapp/core/theme/app_text_styles.dart';
+import 'package:financeapp/features/categories/presentation/screens/categories_screen.dart';
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
@@ -26,7 +27,13 @@ class MoreScreen extends StatelessWidget {
               ]),
               const SizedBox(height: 16),
               _Section(title: 'Finanças', items: [
-                _Item(icon: Icons.category_rounded,         label: 'Gerenciar Categorias'),
+                _Item(
+                  icon: Icons.category_rounded,
+                  label: 'Gerenciar Categorias',
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const CategoriesScreen()),
+                  ),
+                ),
                 _Item(icon: Icons.savings_rounded,          label: 'Metas de Economia'),
                 _Item(icon: Icons.account_balance_rounded,  label: 'Contas Bancárias'),
               ]),
@@ -111,12 +118,13 @@ class _Section extends StatelessWidget {
 class _Item extends StatelessWidget {
   final IconData icon;
   final String label;
-  const _Item({required this.icon, required this.label});
+  final VoidCallback? onTap;
+  const _Item({required this.icon, required this.label, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      onTap: () {},
+      onTap: onTap,
       leading: Container(
         width: 36, height: 36,
         decoration: BoxDecoration(color: AppColors.surfaceLight, borderRadius: BorderRadius.circular(10)),

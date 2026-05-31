@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:financeapp/core/constants/app_constants.dart';
 import 'package:financeapp/core/theme/app_colors.dart';
 import 'package:financeapp/core/theme/app_text_styles.dart';
 import 'package:financeapp/core/di/service_locator.dart';
+import 'package:financeapp/features/categories/presentation/screens/categories_screen.dart';
 import 'package:financeapp/features/transactions/domain/entities/transaction.dart';
 
 class AddTransactionScreen extends StatefulWidget {
@@ -78,6 +80,16 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     Navigator.of(context).pop();
   }
 
+  Future<void> _openCategories() async {
+    final selected = await Navigator.of(context).push<TransactionCategory>(
+      MaterialPageRoute(builder: (_) => CategoriesScreen(
+        selectedCategory: _category,
+        initialType: _type,
+      )),
+    );
+    if (selected != null && mounted) setState(() => _category = selected);
+  }
+
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
       context: context,
@@ -102,7 +114,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         title: const Text('Nova Movimentação'),
         leading: IconButton(icon: const Icon(Icons.arrow_back_rounded), onPressed: () => Navigator.pop(context)),
       ),
-      body: SingleChildScrollView(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: AppLimits.contentMaxWidth),
+          child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,9 +128,26 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             const SizedBox(height: 16),
             _TitleField(controller: _titleCtrl),
             const SizedBox(height: 20),
-            const Text('Categoria', style: AppTextStyles.bodyMedium),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Categoria', style: AppTextStyles.bodyMedium),
+                GestureDetector(
+                  onTap: _openCategories,
+                  child: const Row(children: [
+                    Text('Ver todas', style: TextStyle(fontSize: 13, color: AppColors.primary, fontWeight: FontWeight.w500)),
+                    Icon(Icons.chevron_right_rounded, size: 14, color: AppColors.primary),
+                  ]),
+                ),
+              ],
+            ),
             const SizedBox(height: 10),
-            _CategoryChips(categories: _categories, selected: _category, onSelected: (c) => setState(() => _category = c)),
+            _CategoryChips(
+              categories: _categories,
+              selected: _category,
+              onSelected: (c) => setState(() => _category = c),
+              onViewAll: _openCategories,
+            ),
             const SizedBox(height: 20),
             _DateRow(date: _date, onTap: _pickDate),
             const SizedBox(height: 14),
@@ -124,6 +156,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             _SaveButton(label: _saveLabel, color: _color, onPressed: _save),
             const SizedBox(height: 24),
           ],
+        ),
+          ),
         ),
       ),
     );
@@ -232,37 +266,91 @@ class _CategoryChips extends StatelessWidget {
   final List<TransactionCategory> categories;
   final TransactionCategory? selected;
   final ValueChanged<TransactionCategory> onSelected;
-  const _CategoryChips({required this.categories, required this.selected, required this.onSelected});
+  final VoidCallback? onViewAll;
+  const _CategoryChips({required this.categories, required this.selected, required this.onSelected, this.onViewAll});
 
   @override
   Widget build(BuildContext context) {
     return Wrap(
       spacing: 8, runSpacing: 8,
-      children: categories.map((c) {
-        final active = selected == c;
-        return GestureDetector(
-          onTap: () => onSelected(c),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(
-              color: active ? c.color.withOpacity(0.15) : AppColors.surface,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: active ? c.color : AppColors.border, width: 1.5),
+      children: [
+        ...categories.map((c) {
+          final active = selected == c;
+          return GestureDetector(
+            onTap: () => onSelected(c),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: active ? c.color.withOpacity(0.15) : AppColors.surface,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: active ? c.color : AppColors.border, width: 1.5),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(c.icon, size: 14, color: active ? c.color : AppColors.textSecondary),
+                  const SizedBox(width: 6),
+                  Text(c.label, style: TextStyle(fontSize: 13, color: active ? c.color : AppColors.textSecondary, fontWeight: active ? FontWeight.w600 : FontWeight.normal)),
+                ],
+              ),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(c.icon, size: 14, color: active ? c.color : AppColors.textSecondary),
-                const SizedBox(width: 6),
-                Text(c.label, style: TextStyle(fontSize: 13, color: active ? c.color : AppColors.textSecondary, fontWeight: active ? FontWeight.w600 : FontWeight.normal)),
-              ],
+          );
+        }),
+        if (onViewAll != null)
+          GestureDetector(
+            onTap: onViewAll,
+            child: CustomPaint(
+              painter: _DashedChipBorder(),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.apps_rounded, size: 14, color: AppColors.textSecondary),
+                    SizedBox(width: 6),
+                    Text('Mais', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+                  ],
+                ),
+              ),
             ),
           ),
-        );
-      }).toList(),
+      ],
     );
   }
+}
+
+class _DashedChipBorder extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = AppColors.textHint
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+
+    final rrect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      const Radius.circular(20),
+    );
+
+    const dashWidth = 4.0;
+    const dashSpace = 3.0;
+    final path = Path()..addRRect(rrect);
+    final dashedPath = Path();
+
+    for (final metric in path.computeMetrics()) {
+      double distance = 0;
+      while (distance < metric.length) {
+        final extracted = metric.extractPath(distance, distance + dashWidth);
+        dashedPath.addPath(extracted, Offset.zero);
+        distance += dashWidth + dashSpace;
+      }
+    }
+    canvas.drawPath(dashedPath, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _DateRow extends StatelessWidget {
